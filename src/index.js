@@ -2,18 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const connectDB = require('./config/db.js'); // Import da conexão
+
+// Conecta ao banco
+connectDB();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Porta e URL padrão
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/saude-homem';
 
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('Mongo conectado'))
-  .catch(err => console.error('Erro Mongo:', err));
+// Rota de teste
+app.get('/', (req, res) => {
+  res.send('API Saúde do Homem OK!');
+});
 
-app.get('/', (req, res) => res.send('API Saude Homem ok'));
-
-app.listen(PORT, () => console.log(`Server rodando em http://localhost:${PORT}`));
+// Inicializa o servidor
+app.listen(PORT, () => {
+  console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
+});
