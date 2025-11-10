@@ -1,37 +1,35 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
 
-const UsuarioSchema = new mongoose.Schema(
-  {
-    nomeCompleto: { type: String, required: true, trim: true },
-    dataNascimento: { type: Date, required: true },
-    cpf: { type: String, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    senha: { type: String, required: true },
-    celular: { type: String, trim: true },
+const usuarioSchema = new mongoose.Schema({
+  nome: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  { timestamps: true }
-);
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+  },
+  senha: {
+    type: String,
+    required: true,
+    minlength: 4,
+  },
+  cpf: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  dataNascimento: {
+    type: Date,
+    required: true,
+  },
+  celular: {
+    type: String,
+    required: true,
+  },
+}, { timestamps: true });
 
-// 🔐 Criptografa a senha antes de salvar
-UsuarioSchema.pre('save', async function (next) {
-  if (!this.isModified('senha')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.senha = await bcrypt.hash(this.senha, salt);
-  next();
-});
-
-// 🔍 Método para comparar senhas
-UsuarioSchema.methods.verificarSenha = async function (senhaDigitada) {
-  return bcrypt.compare(senhaDigitada, this.senha);
-};
-
-// 🧮 Virtual: calcular idade do usuário
-UsuarioSchema.virtual('idade').get(function () {
-  if (!this.dataNascimento) return null;
-  const diffMs = Date.now() - this.dataNascimento.getTime();
-  const idade = new Date(diffMs).getUTCFullYear() - 1970;
-  return idade;
-});
-
-module.exports = mongoose.model('Usuario', UsuarioSchema);
+module.exports = mongoose.model("Usuario", usuarioSchema);
